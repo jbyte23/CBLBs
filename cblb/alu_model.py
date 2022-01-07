@@ -179,15 +179,13 @@ def shifter_cell(state, params):
     I0: NOT M0 OR NOT A1
     """
     state_I0 = A1, M0, L_A1, L_M0, N_A1, N_M0, I0
-    I0_out = not_not_or2(state_I0, params)
-    dL_A1, dL_M0, dN_A1, dN_M0, dI0 = I0_out
+    dL_A1, dL_M0, dN_A1, dN_M0, dI0 = not_not_or2(state_I0, params)
 
     """
     I1: NOT M1 OR NOT A0
     """
     state_I1 = A0, M1, L_A0, L_M1, N_A0, N_M1, I1
-    I1_out = not_not_or2(state_I1, params)
-    dL_A0, dL_M1, dN_A0, dN_M1, dI1 = I1_out
+    dL_A0, dL_M1, dN_A0, dN_M1, dI1 = not_not_or2(state_I1, params)
     
 
     """
@@ -212,9 +210,68 @@ def shifter_cell(state, params):
             S0_out, S1_out
 
 
-
 def comparator_cell(state, params):
-    return None
+
+    # Vhodi
+    A0, A1, B0, B1, \
+    I0, I1, I0_0, I1_0,\
+    L_A0, L_A1, L_B0, L_B1, L_I0, L_I1, L_I0_0, L_I1_0,\
+    N_A0, N_A1, N_B0, N_B1, N_I0, N_I1, N_I0_0, N_I1_0,\
+    S0, S1 = state
+
+    """
+    I0: A1 OR NOT B1
+    """
+    state_I0 = A1, B1, L_B1, N_A1, N_B1, I0
+    dL_B1, dN_A1, dN_B1, dI0 = yes_not_or2(state_I0, params)
+
+
+    """
+    I1: NOT A1 OR B1
+    """
+    state_I1 = B1, A1, L_A1, N_B1, N_A1, I1
+    dL_A1, dN_B1, dN_A1, dI1 = yes_not_or2(state_I1, params)
+
+
+    """
+    I0_0: NOT I0 OR NOT I1 OR NOT B0 OR A0
+    """
+    state_I0_0 = I0, I1, B0, A0, \
+                L_I0, L_I1, L_B0, \
+                N_I0, N_I1, N_B0, N_B1, \
+                I0_0
+    dL_I0, dL_I1, dL_B0, dN_I0, dN_I1, dN_B0, dN_A0, dI0_0 = not_not_not_yes_or4(state_I0_0, params)
+
+    """
+    I1_0: NOT I1 OR NOT I0 OR NOT A0 OR B0
+    """
+    state_I1_0 = I1, I0, A0, B0, \
+                L_I1, L_I0, L_A0, \
+                N_I1, N_I0, N_A0, N_B0, \
+                I1_0
+    dL_I1, dL_I0, dL_A0, dN_I1, dN_I0, dN_A0, dN_B0, dI1_0 = not_not_not_yes_or4(state_I1_0, params)
+
+
+    """
+    S0: NOT I0 OR NOT I0_0
+    """
+    state_S0 = I0, I0_0, L_I0, L_I0_0, N_I0, N_I0_0, S0
+    dL_I0, dL_I0_0, dN_I0, dN_I0_0, dS0 = not_not_or2(state_S0, params)
+
+    """
+    S1: NOT I1 OR NOT I1_0
+    """
+    state_S1 = I1, I1_0, L_I1, L_I1_0, N_I1, N_I1_0, S1
+    dL_I1, dL_I1_0, dN_I1, dN_I1_0, dS1 = not_not_or2(state_S1, params)
+
+
+    dA0, dA1, dB0, dB1 = 0, 0, 0, 0
+
+    return dA0, dA1, dB0, dB1, \
+            dI0, dI1, dI0_0, dI1_0,\
+            dL_A0, dL_A1, dL_B0, dL_B1, dL_I0, dL_I1, dL_I0_0, dL_I1_0,\
+            dN_A0, dN_A1, dN_B0, dN_B1, dN_I0, dN_I1, dN_I0_0, dN_I1_0,\
+            dS0, dS1
 
 
 
@@ -232,7 +289,7 @@ def shifter_model(state, T, params):
 
 
 def comparator_model(state, T, params):
-    return None
+    return np.array(comparator_cell(state, params))
 
 
 """
