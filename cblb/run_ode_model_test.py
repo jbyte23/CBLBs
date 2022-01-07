@@ -38,7 +38,7 @@ yes_yes_or_2
 
 
 # simulation parameters
-t_end = 1500
+t_end = 1000
 N = t_end
 
 
@@ -55,22 +55,22 @@ for a in A:
         """
         not_not_or_2
         """
-        # Y = A, B, L_A, L_B, N_A, N_B, OR_out
-        Y0 = np.zeros(7)
+        # # Y = A, B, L_A, L_B, N_A, N_B, OR_out
+        # Y0 = np.zeros(7)
 
-        Y0[:2] = a, b
-        # N_X nastavimo vse na 1 - st celic
-        Y0[4:6] = 1
+        # Y0[:2] = a, b
+        # # N_X nastavimo vse na 1 - st celic
+        # Y0[4:6] = 1
 
         """
         yes_not_or_2
         """
-        # Y = A0, B0, L_B0, N_A0, N_B0, OR_out
-        Y0 = np.zeros(6)
+        # # Y = A0, B0, L_B0, N_A0, N_B0, OR_out
+        # Y0 = np.zeros(6)
 
-        Y0[:2] = a, b
-        # N_X nastavimo vse na 1 - st celic
-        Y0[3:5] = 1
+        # Y0[:2] = a, b
+        # # N_X nastavimo vse na 1 - st celic
+        # Y0[3:5] = 1
 
 
         """
@@ -84,6 +84,21 @@ for a in A:
         # Y0[2:] = 1
 
         """
+        not_not_not_yes_or4
+
+        A, B, C, D, \
+        L_A, L_B, L_C, \
+        N_A, N_B, N_C, N_D, \
+        OR_out
+        """
+        # Y0 = np.zeros(12)
+        # c = 1
+        # d = 0
+        # Y0[:4] = a, b, c, d
+        # # N_X nastavimo vse na 1 - st celic
+        # Y0[7:11] = 1
+
+        """
         two_bit_not_not_or_2
 
         A0, A1, B0, B1, \
@@ -91,10 +106,17 @@ for a in A:
         N_A0, N_A1, N_B0, N_B1, \
         S0, S1
         """
-        # Y0 = np.zeros(14)
+        Y0 = np.zeros(14)
 
-        # Y0[:4] = 0, 0, 1, 1
-        # Y0[8:12] = 1
+        a0 = a
+        b0 = 1  # se negira
+        a1 = 0  # se negira
+        b1 = b
+
+        Y0[:4] = a0, a1, b0, b1
+        Y0[8:12] = 1
+
+
 
 
         T = np.linspace(0, t_end, N)
@@ -115,14 +137,17 @@ for a in A:
 
         # 1 bit
         out = Y[:,-1][-1]
-        sums[0].append(out > 2)
-        print(f'a: {a}, b: {b}, out: {out > 2} ({out})')
+        sums[0].append(out > 1)
+        # or2
+        # print(f'in: {a}{b}, out: {out > 1} ({out})')
+        # or4
+        # print(f'in: {a}{b}{c}{d}, out: {out > 1} ({out})')
 
         # 2 bit
-        # S0 = Y[:,-2][-1] > 2
-        # S1 = Y[:,-1][-1] > 2
-        # print(f'a0b0: {int(Y0[0])}{int(Y0[2])}, out: {S0}\na1b1: {int(Y0[1])}{int(Y0[3])}, out: {S1}')
-        # print()
+        S0 = Y[:,-2][-1] > 1
+        S1 = Y[:,-1][-1] > 1
+        print(f'a0b0: {int(Y0[0])}{int(Y0[2])}, out: {S0}\na1b1: {int(Y0[1])}{int(Y0[3])}, out: {S1}')
+        print()
 
 
 fig, ax = plt.subplots()

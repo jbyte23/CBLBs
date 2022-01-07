@@ -122,6 +122,39 @@ def not_not_or2(state, params):
     return dL_A, dL_B, dN_A, dN_B, dOR_out
 
 
+def not_not_not_yes_or4(state, params):
+
+    delta_L, gamma_L_X, n_y, theta_L_X, eta_x, omega_x, m_x, delta_x, rho_x, gamma_x, theta_x, r_X = params
+    params_yes = gamma_x, n_y, theta_x, delta_x, rho_x
+    params_not = delta_L, gamma_L_X, n_y, theta_L_X, eta_x, omega_x, m_x, delta_x, rho_x
+
+    A, B, C, D, \
+    L_A, L_B, L_C, \
+    N_A, N_B, N_C, N_D, \
+    OR_out = state
+
+    dOR_out = 0
+
+    state_A = L_A, OR_out, A, N_A
+    dL_A, dd = not_cell_wrapper(state_A, params_not)
+    dOR_out += dd
+    dN_A = 0
+
+    state_B = L_B, OR_out, B, N_B
+    dL_B, dd = not_cell_wrapper(state_B, params_not)
+    dOR_out += dd
+    dN_B = 0
+
+    state_C = L_C, OR_out, C, N_C
+    dL_C, dd = not_cell_wrapper(state_C, params_not)
+    dOR_out += dd
+    dN_C = 0
+
+    state_D = OR_out, D, N_D
+    dOR_out += yes_cell_wrapper(state_D, params_yes)
+    dN_D = 0
+
+    return dL_A, dL_B, dL_C, dN_A, dN_B, dN_C, dN_D, dOR_out
 
 """
 ALU components cells
@@ -264,6 +297,18 @@ def yes_not_or2_model(state, T, params):
                     dOR_out
     ])
 
+def not_not_not_yes_or4_model(state, T, params):
+
+    dL_A, dL_B, dL_C, dN_A, dN_B, dN_C, dN_D, dOR_out = not_not_not_yes_or4(state, params)
+    dA, dB, dC, dD = 0, 0, 0, 0
+
+    return np.array([
+        dA, dB, dC, dD,
+        dL_A, dL_B, dL_C, 
+        dN_A, dN_B, dN_C, dN_D, 
+        dOR_out
+    ])
+
 def two_bit_not_not_model(state, T, params):
 
     # Vhodi
@@ -304,4 +349,4 @@ def comparator_model_ODE(T, state, params):
     return comparator_model(state, T, params)
 
 def test_model_ODE(T, state, params):
-    return yes_not_or2_model(state, T, params)
+    return two_bit_not_not_model(state, T, params)
