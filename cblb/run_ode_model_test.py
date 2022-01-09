@@ -83,6 +83,21 @@ for a in A:
         # # N_X nastavimo vse na 1 - st celic
         # Y0[2:] = 1
 
+        """"
+        not_not_not_or3
+
+        A, B, C, \
+        L_A, L_B, L_C, \
+        N_A, N_B, N_C, \
+        OR_out
+        """
+        # Y0 = np.zeros(10)
+        # c = 1
+        # Y0[:3] = a, b, c
+        # # N_X nastavimo vse na 1 - st celic
+        # Y0[6:10] = 1
+
+
         """
         not_not_not_yes_or4
 
@@ -99,6 +114,21 @@ for a in A:
         # Y0[7:11] = 1
 
         """
+        not_not_not_not_or4
+
+        A, B, C, D, \
+        L_A, L_B, L_C, L_D, \
+        N_A, N_B, N_C, N_D, \
+        OR_out
+        """
+        Y0 = np.zeros(13)
+        c = 1
+        d = 1
+        Y0[:4] = a, b, c, d
+        # N_X nastavimo vse na 1 - st celic
+        Y0[5:12] = 1
+
+        """
         two_bit_not_not_or_2
 
         A0, A1, B0, B1, \
@@ -106,15 +136,15 @@ for a in A:
         N_A0, N_A1, N_B0, N_B1, \
         S0, S1
         """
-        Y0 = np.zeros(14)
+        # Y0 = np.zeros(14)
 
-        a0 = a
-        b0 = 1  # se negira
-        a1 = 0  # se negira
-        b1 = b
+        # a0 = a
+        # b0 = 1  # se negira
+        # a1 = 0  # se negira
+        # b1 = b
 
-        Y0[:4] = a0, a1, b0, b1
-        Y0[8:12] = 1
+        # Y0[:4] = a0, a1, b0, b1
+        # Y0[8:12] = 1
 
 
 
@@ -140,14 +170,16 @@ for a in A:
         sums[0].append(out > 1)
         # or2
         # print(f'in: {a}{b}, out: {out > 1} ({out})')
+        # or3
+        # print(f'in: {a}{b}{c}, out: {out > 1} ({out})')
         # or4
-        # print(f'in: {a}{b}{c}{d}, out: {out > 1} ({out})')
+        print(f'in: {a}{b}{c}{d}, out: {out > 1} ({out})')
 
         # 2 bit
-        S0 = Y[:,-2][-1] > 1
-        S1 = Y[:,-1][-1] > 1
-        print(f'a0b0: {int(Y0[0])}{int(Y0[2])}, out: {S0}\na1b1: {int(Y0[1])}{int(Y0[3])}, out: {S1}')
-        print()
+        # S0 = Y[:,-2][-1] > 1
+        # S1 = Y[:,-1][-1] > 1
+        # print(f'a0b0: {int(Y0[0])}{int(Y0[2])}, out: {S0}\na1b1: {int(Y0[1])}{int(Y0[3])}, out: {S1}')
+        # print()
 
 
 fig, ax = plt.subplots()
