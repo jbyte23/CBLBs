@@ -4,6 +4,8 @@ import numpy as np
 """
 YES and NOT cells
 """
+
+
 def yes_cell(state, params):
     x, y, N_X, N_Y = state
     gamma_x, n_y, theta_x, delta_x, rho_x = params
@@ -11,9 +13,9 @@ def yes_cell(state, params):
     # presume that the molecules are degraded in the same strain as they are produced
     N_Y = N_X
 
+    dx_dt = N_X * gamma_x * (y ** n_y)/(1 + (theta_x*y)
+                                        ** n_y) - N_Y * (delta_x * x) - rho_x * x
 
-    dx_dt = N_X * gamma_x * (y ** n_y)/(1 + (theta_x*y)**n_y ) - N_Y * (delta_x * x) - rho_x * x
-    
     return dx_dt
 
 
@@ -24,11 +26,11 @@ def not_cell(state, params):
     # presume that the molecules are degraded in the same strain as they are produced
     N_Y = N_X
 
-
-    f = gamma_L_X * (y ** n_y)/(1 + (theta_L_X*y)**n_y )
+    f = gamma_L_X * (y ** n_y)/(1 + (theta_L_X*y)**n_y)
     dL_X_dt = N_X * (f - delta_L * L_X)
 
-    dx_dt = N_X * (eta_x * (1/(1+ (omega_x*L_X)**m_x))) - N_Y * (delta_x * x) - rho_x * x
+    dx_dt = N_X * (eta_x * (1/(1 + (omega_x*L_X)**m_x))) - \
+        N_Y * (delta_x * x) - rho_x * x
 
     return dL_X_dt, dx_dt
 
@@ -39,7 +41,7 @@ def not_cell(state, params):
 # N_A ... number of cells
 def not_cell_wrapper(state, params):
     L_A, a, b, N_A = state
-    
+
     state_A = L_A, a, b, N_A, N_A
     params_A = params
 
@@ -48,6 +50,8 @@ def not_cell_wrapper(state, params):
 # a ... out
 # b ... in
 # N_A ... number of cells
+
+
 def yes_cell_wrapper(state, params):
     a, b, N_A = state
 
@@ -60,6 +64,7 @@ def yes_cell_wrapper(state, params):
 """
 AUXILIARY CELLS
 """
+
 
 def yes_yes_or2(state, params):
     # YES x OR YES y = OR
@@ -76,7 +81,7 @@ def yes_yes_or2(state, params):
     dN_A0 = 0
     dOR_out += yes_cell_wrapper(state_B, params_yes)
     dN_B0 = 0
-            
+
     return dN_A0, dN_B0, dOR_out
 
 
@@ -97,7 +102,7 @@ def yes_not_or2(state, params):
     dL_B0, dd = not_cell_wrapper(state_B, params_not)
     dOR_out += dd
     dN_B0 = 0
-            
+
     return dL_B0, dN_A0, dN_B0, dOR_out
 
 
@@ -128,9 +133,9 @@ def not_not_not_or3(state, params):
     params_not = delta_L, gamma_L_X, n_y, theta_L_X, eta_x, omega_x, m_x, delta_x, rho_x
 
     A, B, C, \
-    L_A, L_B, L_C, \
-    N_A, N_B, N_C, \
-    OR_out = state
+        L_A, L_B, L_C, \
+        N_A, N_B, N_C, \
+        OR_out = state
 
     dOR_out = 0
 
@@ -159,9 +164,9 @@ def not_not_not_yes_or4(state, params):
     params_not = delta_L, gamma_L_X, n_y, theta_L_X, eta_x, omega_x, m_x, delta_x, rho_x
 
     A, B, C, D, \
-    L_A, L_B, L_C, \
-    N_A, N_B, N_C, N_D, \
-    OR_out = state
+        L_A, L_B, L_C, \
+        N_A, N_B, N_C, N_D, \
+        OR_out = state
 
     dOR_out = 0
 
@@ -193,9 +198,9 @@ def not_not_not_not_or4(state, params):
     params_not = delta_L, gamma_L_X, n_y, theta_L_X, eta_x, omega_x, m_x, delta_x, rho_x
 
     A, B, C, D, \
-    L_A, L_B, L_C, L_D, \
-    N_A, N_B, N_C, N_D, \
-    OR_out = state
+        L_A, L_B, L_C, L_D, \
+        N_A, N_B, N_C, N_D, \
+        OR_out = state
 
     dOR_out = 0
 
@@ -227,10 +232,10 @@ def sum0(state, params):
     params_not = delta_L, gamma_L_X, n_y, theta_L_X, eta_x, omega_x, m_x, delta_x, rho_x
 
     A, B, \
-    I0, I1, J0, \
-    L_A, L_B, L_I0, L_I1, L_J0, \
-    N_A, N_B, N_I0, N_I1, N_J0, \
-    S0 = state
+        I0, I1, J0, \
+        L_A, L_B, L_I0, L_I1, L_J0, \
+        N_A, N_B, N_I0, N_I1, N_J0, \
+        S0 = state
 
     """
     I0: NOT A0 OR NOT B0
@@ -250,7 +255,6 @@ def sum0(state, params):
     state_J0 = I0, I1, L_I0, L_I1, N_I0, N_I1, J0
     dL_I0, dL_I1, dN_I0, dN_I1, dJ0 = not_not_or2(state_J0, params)
 
-
     """
     S0: NOT J0
     """
@@ -258,14 +262,13 @@ def sum0(state, params):
     dL_J0, dS0 = not_cell_wrapper(state_S0, params_not)
     dN_J0 = 0
 
-
     dA, dB = 0, 0,
 
     return dA, dB, \
-            dI0, dI1, dJ0, \
-            dL_A, dL_B, dL_I0, dL_I1, dL_J0, \
-            dN_A, dN_B, dN_I0, dN_I1, dN_J0, \
-            dS0
+        dI0, dI1, dJ0, \
+        dL_A, dL_B, dL_I0, dL_I1, dL_J0, \
+        dN_A, dN_B, dN_I0, dN_I1, dN_J0, \
+        dS0
 
 
 def carry_out(state, params):
@@ -273,10 +276,10 @@ def carry_out(state, params):
     params_not = delta_L, gamma_L_X, n_y, theta_L_X, eta_x, omega_x, m_x, delta_x, rho_x
 
     A0, A1, B0, B1, \
-    I0, I1, I2, I3, I4, I5, \
-    L_A0_0, L_A0_1, L_B0_0, L_B0_1, L_I0, L_I1, L_I2, L_I3, L_I4, L_I5, \
-    N_A0_0, N_A0_1, N_A1_0, N_A1_1, N_B0_0, N_B0_1, N_B1_0, N_B1_1, N_I0, N_I1, N_I2, N_I3, N_I4, N_I5, \
-    C = state
+        I0, I1, I2, I3, I4, I5, \
+        L_A0_0, L_A0_1, L_B0_0, L_B0_1, L_I0, L_I1, L_I2, L_I3, L_I4, L_I5, \
+        N_A0_0, N_A0_1, N_A1_0, N_A1_1, N_B0_0, N_B0_1, N_B1_0, N_B1_1, N_I0, N_I1, N_I2, N_I3, N_I4, N_I5, \
+        C = state
 
     """
     I0: NOT A0 NOT B0
@@ -312,8 +315,8 @@ def carry_out(state, params):
     I5: NOT I2 OR NOT I3 OR NOT I4
     """
     state_I5 = I2, I3, I4, L_I2, L_I3, L_I4, N_I2, N_I3, N_I4, I5
-    dL_I2, dL_I3, dL_I4, dN_I2, dN_I3, dN_I4, dI5 = not_not_not_or3(state_I5, params)
-
+    dL_I2, dL_I3, dL_I4, dN_I2, dN_I3, dN_I4, dI5 = not_not_not_or3(
+        state_I5, params)
 
     """
     C: NOT I5
@@ -325,10 +328,10 @@ def carry_out(state, params):
     dA0, dA1, dB0, dB1 = 0, 0, 0, 0
 
     return dA0, dA1, dB0, dB1, \
-            dI0, dI1, dI2, dI3, dI4, dI5, \
-            dL_A0_0, dL_A0_1, dL_B0_0, dL_B0_1, dL_I0, dL_I1, dL_I2, dL_I3, dL_I4, dL_I5, \
-            dN_A0_0, dN_A0_1, dN_A1_0, dN_A1_1, dN_B0_0, dN_B0_1, dN_B1_0, dN_B1_1, dN_I0, dN_I1, dN_I2, dN_I3, dN_I4, dN_I5, \
-            dC
+        dI0, dI1, dI2, dI3, dI4, dI5, \
+        dL_A0_0, dL_A0_1, dL_B0_0, dL_B0_1, dL_I0, dL_I1, dL_I2, dL_I3, dL_I4, dL_I5, \
+        dN_A0_0, dN_A0_1, dN_A1_0, dN_A1_1, dN_B0_0, dN_B0_1, dN_B1_0, dN_B1_1, dN_I0, dN_I1, dN_I2, dN_I3, dN_I4, dN_I5, \
+        dC
 
 
 def sum1(state, params):
@@ -336,10 +339,10 @@ def sum1(state, params):
     params_not = delta_L, gamma_L_X, n_y, theta_L_X, eta_x, omega_x, m_x, delta_x, rho_x
 
     A0, A1, B0, B1, \
-    I0, I1, I2, I3, I4, I5, I6, I7, I8, \
-    L_A0_0, L_A0_1, L_A1_0, L_A1_1, L_B0_0, L_B0_1, L_B1_0, L_B1_1, L_I0, L_I1, L_I2, L_I3, L_I4, L_I5, L_I6, L_I7, L_I8, \
-    N_A0_0, N_A0_1, N_A1_0, N_A1_1, N_A1_2, N_A1_3, N_B0_0, N_B0_1, N_B1_0, N_B1_1, N_B1_2, N_B1_3, N_I0, N_I1, N_I2, N_I3, N_I4, N_I5, N_I6, N_I7, N_I8,\
-    S1 = state
+        I0, I1, I2, I3, I4, I5, I6, I7, I8, \
+        L_A0_0, L_A0_1, L_A1_0, L_A1_1, L_B0_0, L_B0_1, L_B1_0, L_B1_1, L_I0, L_I1, L_I2, L_I3, L_I4, L_I5, L_I6, L_I7, L_I8, \
+        N_A0_0, N_A0_1, N_A1_0, N_A1_1, N_A1_2, N_A1_3, N_B0_0, N_B0_1, N_B1_0, N_B1_1, N_B1_2, N_B1_3, N_I0, N_I1, N_I2, N_I3, N_I4, N_I5, N_I6, N_I7, N_I8,\
+        S1 = state
 
     """
     I0: NOT A1 OR NOT B1
@@ -375,7 +378,8 @@ def sum1(state, params):
     I5: NOT I0 OR NOT I1 OR NOT A0 OR NOT B0
     """
     state_I5 = I0, I1, A0, B0, L_I0, L_I1, L_A0_1, L_B0_1, N_I0, N_I1, N_A0_1, N_B0_1, I5
-    dL_I0, dL_I1, dL_A0_1, dL_B0_1, dN_I0, dN_I1, dN_A0_1, dN_B0_1, dI5 = not_not_not_not_or4(state_I5, params)
+    dL_I0, dL_I1, dL_A0_1, dL_B0_1, dN_I0, dN_I1, dN_A0_1, dN_B0_1, dI5 = not_not_not_not_or4(
+        state_I5, params)
 
     """
     I6: NOT I2 OR NOT I3
@@ -405,76 +409,287 @@ def sum1(state, params):
     dA0, dA1, dB0, dB1 = 0, 0, 0, 0
 
     return dA0, dA1, dB0, dB1, \
-            dI0, dI1, dI2, dI3, dI4, dI5, dI6, dI7, dI8, \
-            dL_A0_0, dL_A0_1, dL_A1_0, dL_A1_1, dL_B0_0, dL_B0_1, dL_B1_0, dL_B1_1, dL_I0, dL_I1, dL_I2, dL_I3, dL_I4, dL_I5, dL_I6, dL_I7, dL_I8, \
-            dN_A0_0, dN_A0_1, dN_A1_0, dN_A1_1, dN_A1_2, dN_A1_3, dN_B0_0, dN_B0_1, dN_B1_0, dN_B1_1, dN_B1_2, dN_B1_3, dN_I0, dN_I1, dN_I2, dN_I3, dN_I4, dN_I5, dN_I6, dN_I7, dN_I8,\
-            dS1
+        dI0, dI1, dI2, dI3, dI4, dI5, dI6, dI7, dI8, \
+        dL_A0_0, dL_A0_1, dL_A1_0, dL_A1_1, dL_B0_0, dL_B0_1, dL_B1_0, dL_B1_1, dL_I0, dL_I1, dL_I2, dL_I3, dL_I4, dL_I5, dL_I6, dL_I7, dL_I8, \
+        dN_A0_0, dN_A0_1, dN_A1_0, dN_A1_1, dN_A1_2, dN_A1_3, dN_B0_0, dN_B0_1, dN_B1_0, dN_B1_1, dN_B1_2, dN_B1_3, dN_I0, dN_I1, dN_I2, dN_I3, dN_I4, dN_I5, dN_I6, dN_I7, dN_I8,\
+        dS1
 
+
+def MUX_4_1_cell(state, params):
+    delta_L, gamma_L_X, n_y, theta_L_X, eta_x, omega_x, m_x, delta_x, rho_x, gamma_x, theta_x, r_X = params
+    params_yes = gamma_x, n_y, theta_x, delta_x, rho_x
+    params_not = delta_L, gamma_L_X, n_y, theta_L_X, eta_x, omega_x, m_x, delta_x, rho_x
+
+    I0, I1, I2, I3, S0, S1 = state[:6]
+    I0_out, I1_out, I2_out, I3_out = state[6:10]
+    L_I0_I0, L_I1_S0, L_I1_I1, L_I2_S1, L_I2_I2, L_I3_S0, L_I3_S1, L_I3_I3, L_I0, L_I1, L_I2, L_I3 = state[
+        10:22]
+    N_I0_S0, N_I0_S1, N_I0_I0, N_I1_S0, N_I1_S1, N_I1_I1, N_I2_S0, N_I2_S1, N_I2_I2, N_I3_S0, N_I3_S1, N_I3_I3, N_I0, N_I1, N_I2, N_I3 = state[
+        22:38]
+    out = state[38]
+
+    """
+     I0
+    """
+    dI0_out = 0
+
+    # yes S0: I0_S0
+    state_yes_I0_S0 = I0_out, S0, N_I0_S0
+    dI0_out += yes_cell_wrapper(state_yes_I0_S0, params_yes)
+    dN_I0_S0 = 0
+
+    # yes S1: I0_S1
+    state_yes_I0_S1 = I0_out, S1, N_I0_S1
+    dI0_out += yes_cell_wrapper(state_yes_I0_S1, params_yes)
+    dN_I0_S1 = 0
+
+    # not I0: I0_I0
+    state_not_I0_I0 = L_I0_I0, I0_out, I0, N_I0_I0
+    dL_I0_I0, dd = not_cell_wrapper(state_not_I0_I0, params_not)
+    dI0_out += dd
+    dN_I0_I0 = 0
+
+    """
+     I1
+    """
+    dI1_out = 0
+
+    # not S0: I1_S0
+    state_not_I1_S0 = L_I1_S0, I1_out, S0, N_I1_S0
+    dL_I1_S0, dd = not_cell_wrapper(state_not_I1_S0, params_not)
+    dI1_out += dd
+    dN_I1_S0 = 0
+
+    # yes S1: I1_S1
+    state_yes_I1_S1 = I1_out, S1, N_I1_S1
+    dI1_out += yes_cell_wrapper(state_yes_I1_S1, params_yes)
+    dN_I1_S1 = 0
+
+    # not I1: I1_I1
+    state_not_I1_I1 = L_I1_I1, I1_out, I1, N_I1_I1
+    dL_I1_I1, dd = not_cell_wrapper(state_not_I1_I1, params_not)
+    dI1_out += dd
+    dN_I1_I1 = 0
+
+    """
+    I2
+    """
+    dI2_out = 0
+
+    # yes S0: I2_S0
+    state_yes_I2_S0 = I2_out, S0, N_I2_S0
+    dI2_out += yes_cell_wrapper(state_yes_I2_S0, params_yes)
+    dN_I2_S0 = 0
+
+    # not S1: I2_S1
+    state_not_I2_S1 = L_I2_S1, I2_out, S1, N_I2_S1
+    dL_I2_S1, dd = not_cell_wrapper(state_not_I2_S1, params_not)
+    dI2_out += dd
+    dN_I2_S1 = 0
+
+    # not I2: I2_I2
+    state_not_I2_I2 = L_I2_I2, I2_out, I2, N_I2_I2
+    dL_I2_I2, dd = not_cell_wrapper(state_not_I2_I2, params_not)
+    dI2_out += dd
+    dN_I2_I2 = 0
+
+    """
+    I3
+    """
+    dI3_out = 0
+
+    # not S0: I3_S0
+    state_not_I3_S0 = L_I3_S0, I3_out, S0, N_I3_S0
+    dL_I3_S0, dd = not_cell_wrapper(state_not_I3_S0, params_not)
+    dI3_out += dd
+    dN_I3_S0 = 0
+
+    # not S1: I3_S1
+    state_not_I3_S1 = L_I3_S1, I3_out, S1, N_I3_S1
+    dL_I3_S1, dd = not_cell_wrapper(state_not_I3_S1, params_not)
+    dI3_out += dd
+    dN_I3_S1 = 0
+    # not I3: I3_I3
+    state_not_I3_I3 = L_I3_I3, I3_out, I3, N_I3_I3
+    dL_I3_I3, dd = not_cell_wrapper(state_not_I3_I3, params_not)
+    dI3_out += dd
+    dN_I3_I3 = 0
+
+    """
+    out
+    """
+    dout = 0
+
+    # not I0: I0
+    state_not_I0 = L_I0, out, I0_out, N_I0
+    dL_I0, dd = not_cell_wrapper(state_not_I0, params_not)
+    dout += dd
+    dN_I0 = 0
+
+    # not I1: I1
+    state_not_I1 = L_I1, out, I1_out, N_I1
+    dL_I1, dd = not_cell_wrapper(state_not_I1, params_not)
+    dout += dd
+    dN_I1 = 0
+
+    # not I2: I2
+    state_not_I2 = L_I2, out, I2_out, N_I2
+    dL_I2, dd = not_cell_wrapper(state_not_I2, params_not)
+    dout += dd
+    dN_I2 = 0
+
+    # not I3: I3
+    state_not_I3 = L_I3, out, I3_out, N_I3
+    dL_I3, dd = not_cell_wrapper(state_not_I3, params_not)
+    dout += dd
+    dN_I3 = 0
+
+    dI0, dI1, dI2, dI3, dS0, dS1 = 0, 0, 0, 0, 0, 0
+
+    dstate = np.array([dI0, dI1, dI2, dI3, dS0, dS1,
+                       dI0_out, dI1_out, dI2_out, dI3_out,
+                       dL_I0_I0, dL_I1_S0, dL_I1_I1, dL_I2_S1, dL_I2_I2, dL_I3_S0, dL_I3_S1, dL_I3_I3, dL_I0, dL_I1, dL_I2, dL_I3,
+                       dN_I0_S0, dN_I0_S1, dN_I0_I0, dN_I1_S0, dN_I1_S1, dN_I1_I1, dN_I2_S0, dN_I2_S1, dN_I2_I2, dN_I3_S0, dN_I3_S1, dN_I3_I3, dN_I0, dN_I1, dN_I2, dN_I3,
+                       dout])
+
+    return dstate
 
 
 """
 ALU components cells
 """
 
+
+def alu_cell(state, params):
+    A0, A1, B0, B1, M0, M1 = state[:6]
+
+    # adder_S0_I0, adder_S0_I1, adder_S0_J0, \
+    #     adder_S1_I0, adder_S1_I1, adder_S1_I2, adder_S1_I3, adder_S1_I4, adder_S1_I5, adder_S1_I6, adder_S1_I7, adder_S1_I8, \
+    #     adder_C_I0, adder_C_I1, adder_C_I2, adder_C_I3, adder_C_I4, adder_C_I5, \
+    #     adder_S0_L_A, adder_S0_L_B, adder_S0_L_I0, adder_S0_L_I1, adder_S0_L_J0, \
+    #     adder_S1_L_A0_0, adder_S1_L_A0_1, adder_S1_L_A1_0, adder_S1_L_A1_1, adder_S1_L_B0_0, adder_S1_L_B0_1, adder_S1_L_B1_0, adder_S1_L_B1_1, adder_S1_L_I0, adder_S1_L_I1, adder_S1_L_I2, adder_S1_L_I3, adder_S1_L_I4, adder_S1_L_I5, adder_S1_L_I6, adder_S1_L_I7, adder_S1_L_I8, \
+    #     adder_C_L_A0_0, adder_C_L_A0_1, adder_C_L_B0_0, adder_C_L_B0_1, adder_C_L_I0, adder_C_L_I1, adder_C_L_I2, adder_C_L_I3, adder_C_L_I4, adder_C_L_I5, \
+    #     adder_S0_N_A, adder_S0_N_B, adder_S0_N_I0, adder_S0_N_I1, adder_S0_N_J0, \
+    #     adder_S1_N_A0_0, adder_S1_N_A0_1, adder_S1_N_A1_0, adder_S1_N_A1_1, adder_S1_N_A1_2, adder_S1_N_A1_3, adder_S1_N_B0_0, adder_S1_N_B0_1, adder_S1_N_B1_0, adder_S1_N_B1_1, adder_S1_N_B1_2, adder_S1_N_B1_3, adder_S1_N_I0, adder_S1_N_I1, adder_S1_N_I2, adder_S1_N_I3, adder_S1_N_I4, adder_S1_N_I5, adder_S1_N_I6, adder_S1_N_I7, adder_S1_N_I8,\
+    #     adder_C_N_A0_0, adder_C_N_A0_1, adder_C_N_A1_0, adder_C_N_A1_1, adder_C_N_B0_0, adder_C_N_B0_1, adder_C_N_B1_0, adder_C_N_B1_1, adder_C_N_I0, adder_C_N_I1, adder_C_N_I2, adder_C_N_I3, adder_C_N_I4, adder_C_N_I5, \
+    #     adder_S0, adder_S1, adder_C = state[6:99]
+    state_adder = [A0, A1, B0, B1]
+    state_adder.extend(state[6:99])
+    # comp_I0, comp_I1, comp_comp_I0_0, I1_0,\
+    #     comp_L_A0, comp_L_A1, comp_L_B0, comp_L_B1, comp_L_I0, comp_L_I1, comp_L_I0_0, comp_L_I1_0,\
+    #     comp_N_A0, comp_N_A1, comp_N_B0, comp_N_B1, comp_N_I0, comp_N_I1, comp_N_I0_0, comp_N_I1_0,\
+    #     comp_S0, comp_S1 = state[99:121]
+    state_comp = [A0, A1, B0, B1]
+    state_comp.extend(state[99:121])
+
+    # shift_L_A0, shift_L_A1, shift_L_M0, shift_L_M1, shift_L_I0, shift_L_I1, \
+    #     shift_N_A0, shift_shift_N_A1, shift_N_M0, shift_N_M1, shift_N_I0, shift_N_I1, \
+    #     shift_S0, shift_S1 = state[121:137]
+    state_shift = [A0, A1, M0, M1]
+    state_shift.extend(state[121:137])
+
+    # mux_0_I0_out, mux_0_I1_out, mux_0_I2_out, mux_0_I3_out, \
+    #     mux_0_L_I0_I0, mux_0_L_I1_S0, mux_0_L_I1_I1, mux_0_L_I2_S1, mux_0_L_I2_I2, mux_0_L_I3_S0, mux_0_L_I3_S1, mux_0_L_I3_I3, mux_0_L_I0, mux_0_L_I1, mux_0_L_I2, mux_0_L_I3, \
+    #     mux_0_N_I0_S0, mux_0_N_I0_S1, mux_0_N_I0_I0, mux_0_N_I1_S0, mux_0_N_I1_S1, mux_0_N_I1_I1, mux_0_N_I2_S0, mux_0_N_I2_S1, mux_0_N_I2_I2, mux_0_N_I3_S0, mux_0_N_I3_S1, mux_0_N_I3_I3, mux_0_N_I0, mux_0_N_I1, mux_0_N_I2, mux_0_N_I3, \
+    #     mux_0_out = state[137:170]
+
+    # mux_1_I0_out, mux_1_I1_out, mux_1_I2_out, mux_1_I3_out, \
+    #     mux_1_L_I0_I0, mux_1_L_I1_S0, mux_1_L_I1_I1, mux_1_L_I2_S1, mux_1_L_I2_I2, mux_1_L_I3_S0, mux_1_L_I3_S1, mux_1_L_I3_I3, mux_1_L_I0, mux_1_L_I1, mux_1_L_I2, mux_1_L_I3, \
+    #     mux_1_N_I0_S0, mux_1_N_I0_S1, mux_1_N_I0_I0, mux_1_N_I1_S0, mux_1_N_I1_S1, mux_1_N_I1_I1, mux_1_N_I2_S0, mux_1_N_I2_S1, mux_1_N_I2_I2, mux_1_N_I3_S0, mux_1_N_I3_S1, mux_1_N_I3_I3, mux_1_N_I0, mux_1_N_I1, mux_1_N_I2, mux_1_N_I3, \
+    #     mux_1_out = state[170:203]
+    # I_adder, I_comp, I_shift = state[203:206]
+
+    dA0, dA1, dB0, dB1, dM0, dM1 = 0, 0, 0, 0, 0, 0
+    result_alu = [dA0, dA1, dB0, dB1, dM0, dM1]
+
+    result_adder = np.array(adder_cell(state_adder, params))
+    result_comp = np.array(comparator_cell(state_comp, params))
+    result_shift = np.array(shifter_cell(state_shift, params))
+
+    result_alu.extend(result_adder[4:])
+    result_alu.extend(result_comp[4:])
+    result_alu.extend(result_shift[4:])
+
+    # MUX za prvi bit
+    # state_mux_0 = [result_adder[-3] > 1, result_shift[-2] > 1,
+    #                result_shift[-2] > 1, result_comp[-2] > 1, M0, M1]
+    state_mux_0 = [state_adder[-3], state_shift[-2],
+                   state_shift[-2], state_comp[-2], M0, M1]
+    state_mux_0.extend(state[137:170])
+    result_mux_0 = MUX_4_1_cell(state_mux_0, params)
+
+    # if state_adder[-3] > 1:
+    #     print("MUX_0: ", A0, state_adder[-3], result_shift[-2],
+    #           result_comp[-2], result_mux_0[-1] > 1)
+
+    # MUX za drugi bit
+    # state_mux_1 = [result_adder[-2] > 1, result_shift[-1] > 1,
+    #                result_shift[-1] > 1, result_comp[-1] > 1, M0, M1]
+    state_mux_1 = [state_adder[-2], state_shift[-1],
+                   state_shift[-1], state_comp[-1], M0, M1]
+    state_mux_1.extend(state[170:203])
+    result_mux_1 = MUX_4_1_cell(state_mux_1, params)
+
+    result_alu.extend(result_mux_0[6:])
+    result_alu.extend(result_mux_1[6:])
+
+    return result_alu
+
+
 def adder_cell(state, params):
     delta_L, gamma_L_X, n_y, theta_L_X, eta_x, omega_x, m_x, delta_x, rho_x, gamma_x, theta_x, r_X = params
     params_not = delta_L, gamma_L_X, n_y, theta_L_X, eta_x, omega_x, m_x, delta_x, rho_x
 
     A0, A1, B0, B1, \
-    S0_I0, S0_I1, S0_J0, \
-    S1_I0, S1_I1, S1_I2, S1_I3, S1_I4, S1_I5, S1_I6, S1_I7, S1_I8, \
-    C_I0, C_I1, C_I2, C_I3, C_I4, C_I5, \
-    S0_L_A, S0_L_B, S0_L_I0, S0_L_I1, S0_L_J0, \
-    S1_L_A0_0, S1_L_A0_1, S1_L_A1_0, S1_L_A1_1, S1_L_B0_0, S1_L_B0_1, S1_L_B1_0, S1_L_B1_1, S1_L_I0, S1_L_I1, S1_L_I2, S1_L_I3, S1_L_I4, S1_L_I5, S1_L_I6, S1_L_I7, S1_L_I8, \
-    C_L_A0_0, C_L_A0_1, C_L_B0_0, C_L_B0_1, C_L_I0, C_L_I1, C_L_I2, C_L_I3, C_L_I4, C_L_I5, \
-    S0_N_A, S0_N_B, S0_N_I0, S0_N_I1, S0_N_J0, \
-    S1_N_A0_0, S1_N_A0_1, S1_N_A1_0, S1_N_A1_1, S1_N_A1_2, S1_N_A1_3, S1_N_B0_0, S1_N_B0_1, S1_N_B1_0, S1_N_B1_1, S1_N_B1_2, S1_N_B1_3, S1_N_I0, S1_N_I1, S1_N_I2, S1_N_I3, S1_N_I4, S1_N_I5, S1_N_I6, S1_N_I7, S1_N_I8,\
-    C_N_A0_0, C_N_A0_1, C_N_A1_0, C_N_A1_1, C_N_B0_0, C_N_B0_1, C_N_B1_0, C_N_B1_1, C_N_I0, C_N_I1, C_N_I2, C_N_I3, C_N_I4, C_N_I5, \
-    S0, S1, C = state
-    
+        S0_I0, S0_I1, S0_J0, \
+        S1_I0, S1_I1, S1_I2, S1_I3, S1_I4, S1_I5, S1_I6, S1_I7, S1_I8, \
+        C_I0, C_I1, C_I2, C_I3, C_I4, C_I5, \
+        S0_L_A, S0_L_B, S0_L_I0, S0_L_I1, S0_L_J0, \
+        S1_L_A0_0, S1_L_A0_1, S1_L_A1_0, S1_L_A1_1, S1_L_B0_0, S1_L_B0_1, S1_L_B1_0, S1_L_B1_1, S1_L_I0, S1_L_I1, S1_L_I2, S1_L_I3, S1_L_I4, S1_L_I5, S1_L_I6, S1_L_I7, S1_L_I8, \
+        C_L_A0_0, C_L_A0_1, C_L_B0_0, C_L_B0_1, C_L_I0, C_L_I1, C_L_I2, C_L_I3, C_L_I4, C_L_I5, \
+        S0_N_A, S0_N_B, S0_N_I0, S0_N_I1, S0_N_J0, \
+        S1_N_A0_0, S1_N_A0_1, S1_N_A1_0, S1_N_A1_1, S1_N_A1_2, S1_N_A1_3, S1_N_B0_0, S1_N_B0_1, S1_N_B1_0, S1_N_B1_1, S1_N_B1_2, S1_N_B1_3, S1_N_I0, S1_N_I1, S1_N_I2, S1_N_I3, S1_N_I4, S1_N_I5, S1_N_I6, S1_N_I7, S1_N_I8,\
+        C_N_A0_0, C_N_A0_1, C_N_A1_0, C_N_A1_1, C_N_B0_0, C_N_B0_1, C_N_B1_0, C_N_B1_1, C_N_I0, C_N_I1, C_N_I2, C_N_I3, C_N_I4, C_N_I5, \
+        S0, S1, C = state
 
     # S0
     state_S0 = A0, B0, \
-                S0_I0, S0_I1, S0_J0, \
-                S0_L_A, S0_L_B, S0_L_I0, S0_L_I1, S0_L_J0, \
-                S0_N_A, S0_N_B, S0_N_I0, S0_N_I1, S0_N_J0, \
-                S0
+        S0_I0, S0_I1, S0_J0, \
+        S0_L_A, S0_L_B, S0_L_I0, S0_L_I1, S0_L_J0, \
+        S0_N_A, S0_N_B, S0_N_I0, S0_N_I1, S0_N_J0, \
+        S0
 
     dA_S0, dB_S0, \
-    dI0_S0, dI1_S0, dJ0_S0, \
-    dL_A_S0, dL_B_S0, dL_I0_S0, dL_I1_S0, dL_J0_S0, \
-    dN_A_S0, dN_B_S0, dN_I0_S0, dN_I1_S0, dN_J0_S0, \
-    dS0 = sum0(state_S0, params)
-
+        dI0_S0, dI1_S0, dJ0_S0, \
+        dL_A_S0, dL_B_S0, dL_I0_S0, dL_I1_S0, dL_J0_S0, \
+        dN_A_S0, dN_B_S0, dN_I0_S0, dN_I1_S0, dN_J0_S0, \
+        dS0 = sum0(state_S0, params)
 
     # S1
     state_S1 = A0, A1, B0, B1, \
-                S1_I0, S1_I1, S1_I2, S1_I3, S1_I4, S1_I5, S1_I6, S1_I7, S1_I8, \
-                S1_L_A0_0, S1_L_A0_1, S1_L_A1_0, S1_L_A1_1, S1_L_B0_0, S1_L_B0_1, S1_L_B1_0, S1_L_B1_1, S1_L_I0, S1_L_I1, S1_L_I2, S1_L_I3, S1_L_I4, S1_L_I5, S1_L_I6, S1_L_I7, S1_L_I8, \
-                S1_N_A0_0, S1_N_A0_1, S1_N_A1_0, S1_N_A1_1, S1_N_A1_2, S1_N_A1_3, S1_N_B0_0, S1_N_B0_1, S1_N_B1_0, S1_N_B1_1, S1_N_B1_2, S1_N_B1_3, S1_N_I0, S1_N_I1, S1_N_I2, S1_N_I3, S1_N_I4, S1_N_I5, S1_N_I6, S1_N_I7, S1_N_I8,\
-                S1
+        S1_I0, S1_I1, S1_I2, S1_I3, S1_I4, S1_I5, S1_I6, S1_I7, S1_I8, \
+        S1_L_A0_0, S1_L_A0_1, S1_L_A1_0, S1_L_A1_1, S1_L_B0_0, S1_L_B0_1, S1_L_B1_0, S1_L_B1_1, S1_L_I0, S1_L_I1, S1_L_I2, S1_L_I3, S1_L_I4, S1_L_I5, S1_L_I6, S1_L_I7, S1_L_I8, \
+        S1_N_A0_0, S1_N_A0_1, S1_N_A1_0, S1_N_A1_1, S1_N_A1_2, S1_N_A1_3, S1_N_B0_0, S1_N_B0_1, S1_N_B1_0, S1_N_B1_1, S1_N_B1_2, S1_N_B1_3, S1_N_I0, S1_N_I1, S1_N_I2, S1_N_I3, S1_N_I4, S1_N_I5, S1_N_I6, S1_N_I7, S1_N_I8,\
+        S1
 
     dA0_S1, dA1_S1, dB0_S1, dB1_S1, \
-    dI0_S1, dI1_S1, dI2_S1, dI3_S1, dI4_S1, dI5_S1, dI6_S1, dI7_S1, dI8_S1, \
-    dL_A0_0_S1, dL_A0_1_S1, dL_A1_0_S1, dL_A1_1_S1, dL_B0_0_S1, dL_B0_1_S1, dL_B1_0_S1, dL_B1_1_S1, dL_I0_S1, dL_I1_S1, dL_I2_S1, dL_I3_S1, dL_I4_S1, dL_I5_S1, dL_I6_S1, dL_I7_S1, dL_I8_S1, \
-    dN_A0_0_S1, dN_A0_1_S1, dN_A1_0_S1, dN_A1_1_S1, dN_A1_2_S1, dN_A1_3_S1, dN_B0_0_S1, dN_B0_1_S1, dN_B1_0_S1, dN_B1_1_S1, dN_B1_2_S1, dN_B1_3_S1, dN_I0_S1, dN_I1_S1, dN_I2_S1, dN_I3_S1, dN_I4_S1, dN_I5_S1, dN_I6_S1, dN_I7_S1, dN_I8_S1,\
-    dS1 = sum1(state_S1, params)
-
+        dI0_S1, dI1_S1, dI2_S1, dI3_S1, dI4_S1, dI5_S1, dI6_S1, dI7_S1, dI8_S1, \
+        dL_A0_0_S1, dL_A0_1_S1, dL_A1_0_S1, dL_A1_1_S1, dL_B0_0_S1, dL_B0_1_S1, dL_B1_0_S1, dL_B1_1_S1, dL_I0_S1, dL_I1_S1, dL_I2_S1, dL_I3_S1, dL_I4_S1, dL_I5_S1, dL_I6_S1, dL_I7_S1, dL_I8_S1, \
+        dN_A0_0_S1, dN_A0_1_S1, dN_A1_0_S1, dN_A1_1_S1, dN_A1_2_S1, dN_A1_3_S1, dN_B0_0_S1, dN_B0_1_S1, dN_B1_0_S1, dN_B1_1_S1, dN_B1_2_S1, dN_B1_3_S1, dN_I0_S1, dN_I1_S1, dN_I2_S1, dN_I3_S1, dN_I4_S1, dN_I5_S1, dN_I6_S1, dN_I7_S1, dN_I8_S1,\
+        dS1 = sum1(state_S1, params)
 
     # C
     state_C = A0, A1, B0, B1, \
-                C_I0, C_I1, C_I2, C_I3, C_I4, C_I5, \
-                C_L_A0_0, C_L_A0_1, C_L_B0_0, C_L_B0_1, C_L_I0, C_L_I1, C_L_I2, C_L_I3, C_L_I4, C_L_I5, \
-                C_N_A0_0, C_N_A0_1, C_N_A1_0, C_N_A1_1, C_N_B0_0, C_N_B0_1, C_N_B1_0, C_N_B1_1, C_N_I0, C_N_I1, C_N_I2, C_N_I3, C_N_I4, C_N_I5, \
-                C
-    
+        C_I0, C_I1, C_I2, C_I3, C_I4, C_I5, \
+        C_L_A0_0, C_L_A0_1, C_L_B0_0, C_L_B0_1, C_L_I0, C_L_I1, C_L_I2, C_L_I3, C_L_I4, C_L_I5, \
+        C_N_A0_0, C_N_A0_1, C_N_A1_0, C_N_A1_1, C_N_B0_0, C_N_B0_1, C_N_B1_0, C_N_B1_1, C_N_I0, C_N_I1, C_N_I2, C_N_I3, C_N_I4, C_N_I5, \
+        C
+
     dA0_C, dA1_C, dB0_C, dB1_C, \
-    dI0_C, dI1_C, dI2_C, dI3_C, dI4_C, dI5_C, \
-    dL_A0_0_C, dL_A0_1_C, dL_B0_0_C, dL_B0_1_C, dL_I0_C, dL_I1_C, dL_I2_C, dL_I3_C, dL_I4_C, dL_I5_C, \
-    dN_A0_0_C, dN_A0_1_C, dN_A1_0_C, dN_A1_1_C, dN_B0_0_C, dN_B0_1_C, dN_B1_0_C, dN_B1_1_C, dN_I0_C, dN_I1_C, dN_I2_C, dN_I3_C, dN_I4_C, dN_I5_C, \
-    dC = carry_out(state_C, params)
-
-
+        dI0_C, dI1_C, dI2_C, dI3_C, dI4_C, dI5_C, \
+        dL_A0_0_C, dL_A0_1_C, dL_B0_0_C, dL_B0_1_C, dL_I0_C, dL_I1_C, dL_I2_C, dL_I3_C, dL_I4_C, dL_I5_C, \
+        dN_A0_0_C, dN_A0_1_C, dN_A1_0_C, dN_A1_1_C, dN_B0_0_C, dN_B0_1_C, dN_B1_0_C, dN_B1_1_C, dN_I0_C, dN_I1_C, dN_I2_C, dN_I3_C, dN_I4_C, dN_I5_C, \
+        dC = carry_out(state_C, params)
 
     dA0, dA1, dB0, dB1 = 0, 0, 0, 0
 
@@ -498,10 +713,9 @@ def shifter_cell(state, params):
 
     # Vhodi
     A0, A1, M0, M1, I0, I1, \
-    L_A0, L_A1, L_M0, L_M1, L_I0, L_I1, \
-    N_A0, N_A1, N_M0, N_M1, N_I0, N_I1, \
-    S0, S1 = state
-
+        L_A0, L_A1, L_M0, L_M1, L_I0, L_I1, \
+        N_A0, N_A1, N_M0, N_M1, N_I0, N_I1, \
+        S0, S1 = state
 
     """
     I0: NOT M0 OR NOT A1
@@ -514,7 +728,6 @@ def shifter_cell(state, params):
     """
     state_I1 = A0, M1, L_A0, L_M1, N_A0, N_M1, I1
     dL_A0, dL_M1, dN_A0, dN_M1, dI1 = not_not_or2(state_I1, params)
-    
 
     """
     S0: NOT I0
@@ -533,19 +746,19 @@ def shifter_cell(state, params):
     dA0, dA1, dM0, dM1 = 0, 0, 0, 0
 
     return dA0, dA1, dM0, dM1, dI0, dI1, \
-            dL_A0, dL_A1, dL_M0, dL_M1, dL_I0, dL_I1, \
-            dN_A0, dN_A1, dN_M0, dN_M1, dN_I0, dN_I1, \
-            S0_out, S1_out
+        dL_A0, dL_A1, dL_M0, dL_M1, dL_I0, dL_I1, \
+        dN_A0, dN_A1, dN_M0, dN_M1, dN_I0, dN_I1, \
+        S0_out, S1_out
 
 
 def comparator_cell(state, params):
 
     # Vhodi
     A0, A1, B0, B1, \
-    I0, I1, I0_0, I1_0,\
-    L_A0, L_A1, L_B0, L_B1, L_I0, L_I1, L_I0_0, L_I1_0,\
-    N_A0, N_A1, N_B0, N_B1, N_I0, N_I1, N_I0_0, N_I1_0,\
-    S0, S1 = state
+        I0, I1, I0_0, I1_0,\
+        L_A0, L_A1, L_B0, L_B1, L_I0, L_I1, L_I0_0, L_I1_0,\
+        N_A0, N_A1, N_B0, N_B1, N_I0, N_I1, N_I0_0, N_I1_0,\
+        S0, S1 = state
 
     """
     I0: A1 OR NOT B1
@@ -553,32 +766,31 @@ def comparator_cell(state, params):
     state_I0 = A1, B1, L_B1, N_A1, N_B1, I0
     dL_B1, dN_A1, dN_B1, dI0 = yes_not_or2(state_I0, params)
 
-
     """
     I1: NOT A1 OR B1
     """
     state_I1 = B1, A1, L_A1, N_B1, N_A1, I1
     dL_A1, dN_B1, dN_A1, dI1 = yes_not_or2(state_I1, params)
 
-
     """
     I0_0: NOT I0 OR NOT I1 OR NOT B0 OR A0
     """
     state_I0_0 = I0, I1, B0, A0, \
-                L_I0, L_I1, L_B0, \
-                N_I0, N_I1, N_B0, N_B1, \
-                I0_0
-    dL_I0, dL_I1, dL_B0, dN_I0, dN_I1, dN_B0, dN_A0, dI0_0 = not_not_not_yes_or4(state_I0_0, params)
+        L_I0, L_I1, L_B0, \
+        N_I0, N_I1, N_B0, N_B1, \
+        I0_0
+    dL_I0, dL_I1, dL_B0, dN_I0, dN_I1, dN_B0, dN_A0, dI0_0 = not_not_not_yes_or4(
+        state_I0_0, params)
 
     """
     I1_0: NOT I1 OR NOT I0 OR NOT A0 OR B0
     """
     state_I1_0 = I1, I0, A0, B0, \
-                L_I1, L_I0, L_A0, \
-                N_I1, N_I0, N_A0, N_B0, \
-                I1_0
-    dL_I1, dL_I0, dL_A0, dN_I1, dN_I0, dN_A0, dN_B0, dI1_0 = not_not_not_yes_or4(state_I1_0, params)
-
+        L_I1, L_I0, L_A0, \
+        N_I1, N_I0, N_A0, N_B0, \
+        I1_0
+    dL_I1, dL_I0, dL_A0, dN_I1, dN_I0, dN_A0, dN_B0, dI1_0 = not_not_not_yes_or4(
+        state_I1_0, params)
 
     """
     S0: NOT I0 OR NOT I0_0
@@ -592,20 +804,19 @@ def comparator_cell(state, params):
     state_S1 = I1, I1_0, L_I1, L_I1_0, N_I1, N_I1_0, S1
     dL_I1, dL_I1_0, dN_I1, dN_I1_0, dS1 = not_not_or2(state_S1, params)
 
-
     dA0, dA1, dB0, dB1 = 0, 0, 0, 0
 
     return dA0, dA1, dB0, dB1, \
-            dI0, dI1, dI0_0, dI1_0,\
-            dL_A0, dL_A1, dL_B0, dL_B1, dL_I0, dL_I1, dL_I0_0, dL_I1_0,\
-            dN_A0, dN_A1, dN_B0, dN_B1, dN_I0, dN_I1, dN_I0_0, dN_I1_0,\
-            dS0, dS1
-
+        dI0, dI1, dI0_0, dI1_0,\
+        dL_A0, dL_A1, dL_B0, dL_B1, dL_I0, dL_I1, dL_I0_0, dL_I1_0,\
+        dN_A0, dN_A1, dN_B0, dN_B1, dN_I0, dN_I1, dN_I0_0, dN_I1_0,\
+        dS0, dS1
 
 
 """
 ALU component models
 """
+
 
 def adder_model(state, T, params):
     return np.array(adder_cell(state, params))
@@ -623,14 +834,15 @@ def comparator_model(state, T, params):
 ALU model
 """
 
-def alu_model(state, T, params):
-    return None
 
+def alu_model(state, T, params):
+    return np.array(alu_cell(state, params))
 
 
 """
 testing models
 """
+
 
 def not_not_or2_model(state, T, params):
 
@@ -647,7 +859,8 @@ def not_not_or2_model(state, T, params):
                     dL_A0, dL_B0,
                     dN_A0, dN_B0,
                     dOR_out
-    ])
+                     ])
+
 
 def yes_yes_or2_model(state, T, params):
 
@@ -662,7 +875,8 @@ def yes_yes_or2_model(state, T, params):
     return np.array([dA0, dB0,
                     dN_A0, dN_B0,
                     dOR_out
-    ])
+                     ])
+
 
 def yes_not_or2_model(state, T, params):
 
@@ -679,48 +893,55 @@ def yes_not_or2_model(state, T, params):
                     dL_B0,
                     dN_A0, dN_B0,
                     dOR_out
-    ])
+                     ])
+
 
 def not_not_not_yes_or4_model(state, T, params):
 
-    dL_A, dL_B, dL_C, dN_A, dN_B, dN_C, dN_D, dOR_out = not_not_not_yes_or4(state, params)
+    dL_A, dL_B, dL_C, dN_A, dN_B, dN_C, dN_D, dOR_out = not_not_not_yes_or4(
+        state, params)
     dA, dB, dC, dD = 0, 0, 0, 0
 
     return np.array([
         dA, dB, dC, dD,
-        dL_A, dL_B, dL_C, 
-        dN_A, dN_B, dN_C, dN_D, 
+        dL_A, dL_B, dL_C,
+        dN_A, dN_B, dN_C, dN_D,
         dOR_out
     ])
 
+
 def not_not_not_not_or4_model(state, T, params):
-    dL_A, dL_B, dL_C, dL_D, dN_A, dN_B, dN_C, dN_D, dOR_out = not_not_not_not_or4(state, params)
+    dL_A, dL_B, dL_C, dL_D, dN_A, dN_B, dN_C, dN_D, dOR_out = not_not_not_not_or4(
+        state, params)
     dA, dB, dC, dD = 0, 0, 0, 0
 
     return np.array([
         dA, dB, dC, dD,
         dL_A, dL_B, dL_C, dL_D,
-        dN_A, dN_B, dN_C, dN_D, 
+        dN_A, dN_B, dN_C, dN_D,
         dOR_out
     ])
 
+
 def not_not_not_or3_model(state, T, params):
-    dL_A, dL_B, dL_C, dN_A, dN_B, dN_C, dOR_out = not_not_not_or3(state, params)
+    dL_A, dL_B, dL_C, dN_A, dN_B, dN_C, dOR_out = not_not_not_or3(
+        state, params)
     dA, dB, dC = 0, 0, 0
     return np.array([
         dA, dB, dC,
-        dL_A, dL_B, dL_C, 
-        dN_A, dN_B, dN_C, 
+        dL_A, dL_B, dL_C,
+        dN_A, dN_B, dN_C,
         dOR_out
     ])
+
 
 def two_bit_not_not_model(state, T, params):
 
     # Vhodi
     A0, A1, B0, B1, \
-    L_A0, L_A1, L_B0, L_B1, \
-    N_A0, N_A1, N_B0, N_B1, \
-    S0, S1 = state
+        L_A0, L_A1, L_B0, L_B1, \
+        N_A0, N_A1, N_B0, N_B1, \
+        S0, S1 = state
 
     state_S0 = A0, B0, L_A0, L_B0, N_A0, N_B0, S0
     state_S1 = A1, B1, L_A1, L_B1, N_A1, N_B1, S1
@@ -732,26 +953,32 @@ def two_bit_not_not_model(state, T, params):
 
     dA0, dA1, dB0, dB1 = 0, 0, 0, 0
 
-    return np.array([dA0, dA1, dB0, dB1, 
-    dL_A0, dL_A1, dL_B0, dL_B1, 
-    dN_A0, dN_A1, dN_B0, dN_B1, 
-    dS0, dS1])
+    return np.array([dA0, dA1, dB0, dB1,
+                     dL_A0, dL_A1, dL_B0, dL_B1,
+                     dN_A0, dN_A1, dN_B0, dN_B1,
+                     dS0, dS1])
+
 
 """
 Wrappers for scipy.integrate.ode
 """
 
+
 def alu_model_ODE(T, state, params):
     return alu_model(state, T, params)
+
 
 def adder_model_ODE(T, state, params):
     return adder_model(state, T, params)
 
+
 def shifter_model_ODE(T, state, params):
     return shifter_model(state, T, params)
 
+
 def comparator_model_ODE(T, state, params):
     return comparator_model(state, T, params)
+
 
 def test_model_ODE(T, state, params):
     return not_not_not_not_or4_model(state, T, params)
