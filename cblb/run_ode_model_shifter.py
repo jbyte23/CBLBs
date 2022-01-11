@@ -29,7 +29,7 @@ N = t_end
 
 shifts = []
 x_axis = list(range(4))
-y_axis = [2,1]
+y_axis = [2, 1]
 for m in [1,2]: # 1 (01): right, 2 (10): left
     
     M = int_to_bool_list(m)
@@ -37,7 +37,7 @@ for m in [1,2]: # 1 (01): right, 2 (10): left
     M1 = M[1]
     print(f'MODE: {M1}{M0}')
 
-    shifts.append([])
+    shifts.insert(0, [])
     # x_axis.append(m)
     # y_axis.insert(0, m)
     for a in range(4): 
@@ -81,7 +81,7 @@ for m in [1,2]: # 1 (01): right, 2 (10): left
 
         s = S1 * 2 + S0
 
-        shifts[-1].append(s)
+        shifts[0].append(s)
         print(f'IN: {A1}{A0}, out: {S1}{S0}')
     
     print()
@@ -101,7 +101,8 @@ for i in range(len(y_axis)):
 
 ax.set_title("Shifter Heat map")
 fig.tight_layout()
-plt.show()
+# plt.show()
+plt.savefig('cblb/figs/heatmap_shifter.pdf')
 
 
 # plt.figure()

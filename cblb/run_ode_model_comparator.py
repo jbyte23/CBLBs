@@ -109,8 +109,8 @@ for i in range(len(y_axis)):
 ax.set_title("Comparator Heat map")
 fig.tight_layout()
 _, labels = plt.yticks()
-plt.show()
-
+# plt.show()
+plt.savefig('cblb/figs/heatmap_comparator.pdf')
 
 # plt.figure()
 # plt.plot(T,out)
